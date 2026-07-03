@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#0f1012" />
+    <meta name="description" content="Personal deal pipeline and lead tracker" />
+    <title>Pipeline</title>
+    <script>
+      // Apply theme before first paint to avoid a flash. Mirrors db.ts storage.
+      (function () {
+        try {
+          var raw = localStorage.getItem('pipeline.data.v1');
+          var pref = raw ? (JSON.parse(raw).settings || {}).theme || 'system' : 'system';
+          var dark =
+            pref === 'dark' ||
+            (pref === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dark);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
