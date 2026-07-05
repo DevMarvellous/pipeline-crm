@@ -48,9 +48,23 @@ All data sits under one key, `pipeline.data.v1`:
 
 If the data model ever changes incompatibly, bump `schemaVersion`, add a migration in `src/lib/db.ts` (`load()` is the single read path), and keep accepting old export files in `importAll` — that's the whole migration story.
 
+## AI outreach scripts (Gemini)
+
+Lead Detail has a **Generate script** button that drafts a short WhatsApp-style message (first outreach / follow-up / after viewing / re-engage) from that lead's own details. This calls Gemini through a server-side function — **the API key never reaches the browser**.
+
+**Setup:**
+
+1. Get a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey).
+2. Copy `.env.example` to `.env` and set `GEMINI_API_KEY=your-key`. `.env` is gitignored — never commit it.
+3. `npm run dev` (or `npm run preview`) works locally without `vercel dev`: a small Vite middleware (`vite.config.ts`) mounts the same handler that runs in production.
+
+**On Vercel:** set the environment variable **`GEMINI_API_KEY`** in Project Settings → Environment Variables (all environments), then redeploy. Optional: `GEMINI_MODEL` to override the default (`gemini-2.5-flash`).
+
+This feature needs internet — everything else in Pipeline (leads, follow-ups, call/WhatsApp/email, offline mode) keeps working exactly as before with or without it configured.
+
 ## Deploy
 
-Static site, zero config on Vercel: import the repo, framework preset **Vite**, done. `vercel.json` includes the SPA rewrite so deep links like `/leads/abc` resolve.
+Static site, zero config on Vercel: import the repo, framework preset **Vite**, done. `vercel.json` rewrites everything except `/api/*` to `index.html` so both SPA deep links (`/leads/abc`) and the serverless function resolve correctly. Remember to set `GEMINI_API_KEY` (above) before the script generator will work in production.
 
 ## Adding Supabase later
 

@@ -30,6 +30,11 @@ export function whatsAppLink(lead: Lead): string {
   return `https://wa.me/${phoneDigits(lead.phone)}?text=${encodeURIComponent(msg)}`;
 }
 
+/** wa.me link pre-filled with a specific message (e.g. an AI-generated script). */
+export function whatsAppLinkWithText(lead: Lead, text: string): string {
+  return `https://wa.me/${phoneDigits(lead.phone)}?text=${encodeURIComponent(text)}`;
+}
+
 export function mailtoLink(lead: Lead): string {
   const subject = `Following up — ${lead.propertyType ? `${lead.propertyType} in ${lead.location ?? 'your area'}` : 'property search'}`;
   const body = `Hi ${firstName(lead)},\n\nFollowing up on our conversation about ${topic(lead)}. Let me know a good time to talk.\n\nBest regards`;

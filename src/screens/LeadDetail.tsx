@@ -10,6 +10,7 @@ import { SnoozeMenu } from '../components/SnoozeMenu';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { EmptyState } from '../components/EmptyState';
 import { VoiceNoteInput } from '../components/VoiceNoteInput';
+import { ScriptGenerator } from '../components/ScriptGenerator';
 import { ChevronLeftIcon, ClockIcon, PlusIcon, TrashIcon } from '../components/Icons';
 
 const inputCls =
@@ -147,6 +148,9 @@ export function LeadDetail() {
 
       {/* Quick actions */}
       <QuickActions lead={lead} variant="bar" />
+
+      {/* AI outreach script */}
+      <ScriptGenerator lead={lead} />
 
       {/* Status */}
       <div>
