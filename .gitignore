@@ -18,6 +18,11 @@ dev-dist
 .env.*
 !.env.example
 
+# Android signing keystore — lives only as a base64 GitHub Actions secret
+*.jks
+*.keystore
+.bubblewrap/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
