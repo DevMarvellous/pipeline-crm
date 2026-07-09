@@ -1,0 +1,53 @@
+{
+  "packageId": "com.devmarvellous.pipeline",
+  "host": "pipeline-crm-flax.vercel.app",
+  "name": "Pipeline",
+  "launcherName": "Pipeline",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#0f1012",
+  "navigationColor": "#0f1012",
+  "navigationColorDark": "#0f1012",
+  "navigationDividerColor": "#0f1012",
+  "navigationDividerColorDark": "#0f1012",
+  "backgroundColor": "#0f1012",
+  "enableNotifications": true,
+  "startUrl": "/today",
+  "iconUrl": "https://pipeline-crm-flax.vercel.app/icons/pwa-512.png",
+  "maskableIconUrl": "https://pipeline-crm-flax.vercel.app/icons/maskable-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "pipeline"
+  },
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [
+    {
+      "name": "Add Lead",
+      "shortName": "Add",
+      "url": "/add",
+      "chosenIconUrl": "https://pipeline-crm-flax.vercel.app/icons/pwa-192.png"
+    },
+    {
+      "name": "Today",
+      "shortName": "Today",
+      "url": "/today",
+      "chosenIconUrl": "https://pipeline-crm-flax.vercel.app/icons/pwa-192.png"
+    }
+  ],
+  "generatorApp": "cli",
+  "webManifestUrl": "https://pipeline-crm-flax.vercel.app/manifest.webmanifest",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": { "enabled": false },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://pipeline-crm-flax.vercel.app/",
+  "minSdkVersion": 21,
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": []
+}

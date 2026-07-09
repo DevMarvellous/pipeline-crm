@@ -1,0 +1,68 @@
+name: "Build Android APK"
+
+# Wraps the deployed Pipeline PWA (pipeline-crm-flax.vercel.app) as a signed
+# Android APK using Bubblewrap/TWA, entirely on GitHub's runners. Produces a
+# downloadable .apk attached to a GitHub Release — nothing installed locally.
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Set up Node (for Bubblewrap CLI)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Restore signing keystore from secret
+        run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android.keystore
+
+      - name: Set build version code from run number
+        run: |
+          node -e "
+            const fs = require('fs');
+            const m = JSON.parse(fs.readFileSync('twa-manifest.json', 'utf8'));
+            m.appVersionCode = ${{ github.run_number }};
+            fs.writeFileSync('twa-manifest.json', JSON.stringify(m, null, 2));
+          "
+
+      - name: Build signed APK with Bubblewrap
+        run: |
+          printf '%s\n%s\n' "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" "${{ secrets.ANDROID_KEY_PASSWORD }}" \
+            | npx --yes @bubblewrap/cli build --skipPwaValidation
+
+      - name: Remove keystore from the runner's working copy
+        if: always()
+        run: rm -f android.keystore
+
+      - name: Upload APK as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-apk
+          path: app-release-signed.apk
+          retention-days: 30
+
+      - name: Publish GitHub Release with the APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Pipeline v1.0.${{ github.run_number }}
+          files: app-release-signed.apk
+          generate_release_notes: false
