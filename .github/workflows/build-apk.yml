@@ -60,14 +60,15 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq expect
           expect -f - <<'EXPECT_EOF'
-            set timeout 600
+            set timeout 900
             spawn npx --yes @bubblewrap/cli build --skipPwaValidation
-            expect {
-              -re {\(Y/n\)} { send "no\r"; exp_continue }
-              -re {Password for the Key Store:} { send "$env(KEYSTORE_PW)\r"; exp_continue }
-              -re {Password for the Key:} { send "$env(KEY_PW)\r"; exp_continue }
-              eof
-            }
+            expect -re {\(Y/n\)}
+            send "yes\r"
+            expect -re {Password for the Key Store:}
+            send "$env(KEYSTORE_PW)\r"
+            expect -re {Password for the Key:}
+            send "$env(KEY_PW)\r"
+            expect eof
             catch wait result
             exit [lindex $result 3]
           EXPECT_EOF
