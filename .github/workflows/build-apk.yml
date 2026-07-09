@@ -55,7 +55,7 @@ jobs:
 
       - name: Build signed APK with Bubblewrap
         run: |
-          printf '%s\n%s\n' "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" "${{ secrets.ANDROID_KEY_PASSWORD }}" \
+          printf 'no\n%s\n%s\n' "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" "${{ secrets.ANDROID_KEY_PASSWORD }}" \
             | npx --yes @bubblewrap/cli build --skipPwaValidation
 
       - name: Remove keystore from the runner's working copy
