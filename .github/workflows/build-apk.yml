@@ -34,6 +34,16 @@ jobs:
       - name: Restore signing keystore from secret
         run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android.keystore
 
+      - name: Pre-configure Bubblewrap's JDK/SDK paths (avoids interactive first-run wizard)
+        run: |
+          mkdir -p "$HOME/.bubblewrap"
+          cat > "$HOME/.bubblewrap/config.json" <<EOF
+          {
+            "jdkPath": "$JAVA_HOME",
+            "androidSdkPath": "$ANDROID_HOME"
+          }
+          EOF
+
       - name: Set build version code from run number
         run: |
           node -e "
