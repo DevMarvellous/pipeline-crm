@@ -54,9 +54,26 @@ jobs:
           "
 
       - name: Build signed APK with Bubblewrap
+        env:
+          KEYSTORE_PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PW: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
-          printf 'no\n%s\n%s\n' "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" "${{ secrets.ANDROID_KEY_PASSWORD }}" \
-            | npx --yes @bubblewrap/cli build --skipPwaValidation
+          sudo apt-get update -qq && sudo apt-get install -y -qq expect
+          expect -f - <<'EXPECT_EOF'
+            set timeout 600
+            spawn npx --yes @bubblewrap/cli build --skipPwaValidation
+            expect {
+              -re {\(Y/n\)} { send "no\r"; exp_continue }
+              -re {Password for the Key Store:} { send "$env(KEYSTORE_PW)\r"; exp_continue }
+              -re {Password for the Key:} { send "$env(KEY_PW)\r"; exp_continue }
+              eof
+            }
+            catch wait result
+            exit [lindex $result 3]
+          EXPECT_EOF
+
+      - name: Confirm APK was produced
+        run: test -f app-release-signed.apk && echo "APK built successfully"
 
       - name: Remove keystore from the runner's working copy
         if: always()
