@@ -53,28 +53,23 @@ jobs:
             fs.writeFileSync('twa-manifest.json', JSON.stringify(m, null, 2));
           "
 
+      - name: Regenerate Android project (non-interactive)
+        run: npx --yes @bubblewrap/cli update --skipVersionUpgrade
+
       - name: Build signed APK with Bubblewrap
         env:
-          KEYSTORE_PW: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          KEY_PW: ${{ secrets.ANDROID_KEY_PASSWORD }}
-        run: |
-          sudo apt-get update -qq && sudo apt-get install -y -qq expect
-          expect -f - <<'EXPECT_EOF'
-            set timeout 900
-            spawn npx --yes @bubblewrap/cli build --skipPwaValidation
-            expect -re {\(Y/n\)}
-            send "yes\r"
-            expect -re {Password for the Key Store:}
-            send "$env(KEYSTORE_PW)\r"
-            expect -re {Password for the Key:}
-            send "$env(KEY_PW)\r"
-            expect eof
-            catch wait result
-            exit [lindex $result 3]
-          EXPECT_EOF
+          BUBBLEWRAP_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          BUBBLEWRAP_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: npx --yes @bubblewrap/cli build --skipPwaValidation
 
       - name: Confirm APK was produced
         run: test -f app-release-signed.apk && echo "APK built successfully"
+
+      - name: Extract and log SHA256 fingerprint
+        run: |
+          echo "=== SHA256 Certificate Fingerprint ==="
+          keytool -list -v -keystore android.keystore -alias pipeline -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" | grep "SHA256:" | head -1
+          echo "============================================"
 
       - name: Remove keystore from the runner's working copy
         if: always()
